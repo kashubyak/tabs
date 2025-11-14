@@ -8,13 +8,13 @@ export async function generateStaticParams() {
 }
 
 interface PageProps {
-	params: {
+	params: Promise<{
 		tabId: string
-	}
+	}>
 }
 
-export default function TabPage({ params }: PageProps) {
-	const { tabId } = params
+export default async function TabPage({ params }: PageProps) {
+	const { tabId } = await params
 
 	return (
 		<TabsLayout>
