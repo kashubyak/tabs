@@ -1,10 +1,10 @@
+import { TabItem } from '@/types/tap.types'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { clsx, type ClassValue } from 'clsx'
 import { useRouter } from 'next/navigation'
 import React, { CSSProperties, memo } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { TabItem } from '../types/tap.types'
 
 function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))

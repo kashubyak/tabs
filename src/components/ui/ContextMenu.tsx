@@ -15,9 +15,7 @@ function ContextMenu({ x, y, isPinned, onClose, onTogglePin }: ContextMenuProps)
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-				onClose()
-			}
+			if (menuRef.current && !menuRef.current.contains(event.target as Node)) onClose()
 		}
 		const handleScroll = () => onClose()
 		window.addEventListener('mousedown', handleClickOutside)

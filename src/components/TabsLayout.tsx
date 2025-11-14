@@ -5,15 +5,13 @@ import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortabl
 import { usePathname } from 'next/navigation'
 import React from 'react'
 import { createPortal } from 'react-dom'
-
 import { useContextMenu } from '../hooks/useContextMenu'
 import { useTabDragDrop } from '../hooks/useTabDragDrop'
 import { useTabOverflow } from '../hooks/useTabOverflow'
 import { useTabs } from '../hooks/useTabs'
-
-import TabItemComponent from './TabItem'
 import TabsDropdown from './TabsDropdown'
 import ContextMenu from './ui/ContextMenu'
+import TabItemComponent from './ui/TabItem'
 
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname()

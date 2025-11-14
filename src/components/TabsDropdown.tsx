@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { TabItem } from '../types/tap.types'
-import TabItemComponent from './TabItem'
+import TabItemComponent from './ui/TabItem'
 
 interface TabsDropdownProps {
 	overflowTabs: TabItem[]
