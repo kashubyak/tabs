@@ -4,6 +4,8 @@ import {
 	closestCenter,
 	DndContext,
 	DragEndEvent,
+	DragOverlay,
+	DragStartEvent,
 	KeyboardSensor,
 	PointerSensor,
 	useSensor,
@@ -16,6 +18,7 @@ import {
 } from '@dnd-kit/sortable'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { initialTabs } from '../data/initialTabs'
 import { TabItem } from '../types/tap.types'
@@ -45,6 +48,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 	const [visibleTabs, setVisibleTabs] = useState<TabItem[]>([])
 	const [hiddenTabs, setHiddenTabs] = useState<TabItem[]>([])
 
+	const [activeId, setActiveId] = useState<string | null>(null)
 	const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
 
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -131,6 +135,10 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 		useSensor(KeyboardSensor),
 	)
 
+	const handleDragStart = (event: DragStartEvent) => {
+		setActiveId(event.active.id as string)
+	}
+
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event
 		if (over && active.id !== over.id) {
@@ -140,6 +148,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 				return arrayMove(items, oldIndex, newIndex)
 			})
 		}
+		setActiveId(null)
 	}
 
 	const handlePinToggle = (id: string) => {
@@ -165,6 +174,8 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 			isPinned: tab.isPinned,
 		})
 	}
+
+	const activeTab = activeId ? tabs.find(t => t.id === activeId) : null
 
 	if (!mounted) return null
 
@@ -203,6 +214,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 						<DndContext
 							sensors={sensors}
 							collisionDetection={closestCenter}
+							onDragStart={handleDragStart}
 							onDragEnd={handleDragEnd}
 						>
 							<SortableContext
@@ -221,6 +233,22 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 									))}
 								</div>
 							</SortableContext>
+
+							{typeof document !== 'undefined' &&
+								createPortal(
+									<DragOverlay adjustScale={false} zIndex={50}>
+										{activeTab ? (
+											<TabItemComponent
+												tab={activeTab}
+												isActive={pathname === activeTab.url}
+												onContextMenu={() => {}}
+												variant='default'
+												isOverlay
+											/>
+										) : null}
+									</DragOverlay>,
+									document.body,
+								)}
 						</DndContext>
 					</div>
 

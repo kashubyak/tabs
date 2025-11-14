@@ -34,8 +34,8 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 			})
 
 		const dndStyle: React.CSSProperties = {
-			transform: CSS.Translate.toString(transform),
-			transition,
+			transform: isOverlay ? undefined : CSS.Translate.toString(transform),
+			transition: isOverlay ? undefined : transition,
 			...style,
 		}
 
@@ -67,14 +67,18 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 						? 'px-6'
 						: '',
 
-					!isDropdown &&
+					isOverlay &&
+						'bg-gray-400 text-white shadow-[0_4px_12px_rgba(0,0,0,0.4)] z-50 opacity-100! border-none',
+
+					!isOverlay && isDragging && 'opacity-0',
+
+					!isOverlay &&
+						!isDragging &&
+						!isDropdown &&
 						!isGhost &&
 						(isActive
 							? 'bg-[#F3F4F6] text-gray-900 z-10'
 							: 'bg-white text-gray-500 hover:bg-[#F3F4F6] hover:text-gray-900'),
-
-					isActive && isOverlay && 'bg-[#F3F4F6] shadow-xl opacity-90',
-					isDragging && 'opacity-50 z-50 shadow-md',
 
 					isDropdown &&
 						'w-full h-10 hover:bg-gray-100 px-4 min-w-0 max-w-none text-gray-600 border-b border-gray-50 shrink',
@@ -82,11 +86,10 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 					isGhost && 'opacity-0 pointer-events-none',
 				)}
 			>
-				{!isDropdown && !isGhost && isActive && (
+				{!isDropdown && !isGhost && isActive && !isOverlay && (
 					<div className='absolute top-0 left-0 right-0 h-[3px] bg-blue-600 z-20' />
 				)}
-
-				{!isActive && !isDropdown && !isGhost && !isOverlay && (
+				{!isActive && !isDropdown && !isGhost && !isOverlay && !isDragging && (
 					<div className='absolute right-0 top-1/2 -translate-y-1/2 h-4 w-px bg-gray-200 group-hover:hidden' />
 				)}
 
