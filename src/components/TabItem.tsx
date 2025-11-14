@@ -77,7 +77,7 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				onAuxClick={handleAuxClick}
 				onContextMenu={handleContextMenu}
 				className={cn(
-					'relative flex items-center h-full text-[14px] font-medium cursor-pointer select-none group whitespace-nowrap transition-colors shrink-0',
+					'relative flex items-center h-full text-[14px] font-medium cursor-pointer select-none group whitespace-nowrap transition-colors shrink-0 tab-item-node',
 
 					tab.isPinned && !isDropdown
 						? 'w-[50px] justify-center px-0'
@@ -123,7 +123,11 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				</span>
 
 				{(!tab.isPinned || isDropdown) && (
-					<span className='truncate leading-none pb-px block'>{tab.title}</span>
+					<span
+						className={cn('truncate leading-none pb-px block', !isDropdown && 'pr-6')}
+					>
+						{tab.title}
+					</span>
 				)}
 
 				{!isGhost && !isOverlay && (

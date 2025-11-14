@@ -7,6 +7,7 @@ interface TabsDropdownProps {
 	activeTabUrl: string
 	onContextMenu: (e: React.MouseEvent, tab: TabItem) => void
 	onCloseTab: (id: string) => void
+	overflowCount: number 
 }
 
 export default function TabsDropdown({
@@ -14,6 +15,7 @@ export default function TabsDropdown({
 	activeTabUrl,
 	onContextMenu,
 	onCloseTab,
+	overflowCount,
 }: TabsDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const menuRef = useRef<HTMLDivElement>(null)
@@ -27,7 +29,7 @@ export default function TabsDropdown({
 		return () => document.removeEventListener('mousedown', handleClickOutside)
 	}, [])
 
-	if (hiddenTabs.length === 0) return null
+	if (overflowCount === 0) return null
 
 	const isHiddenTabActive = hiddenTabs.some(t => t.url === activeTabUrl)
 
@@ -59,7 +61,7 @@ export default function TabsDropdown({
 
 				{!isOpen && (
 					<span className='absolute top-2 right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gray-200 px-1 text-[10px] font-bold text-gray-600'>
-						{hiddenTabs.length}
+						{overflowCount} 
 					</span>
 				)}
 			</button>
