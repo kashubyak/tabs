@@ -21,12 +21,20 @@ import { initialTabs } from '../data/initialTabs'
 import { TabItem } from '../types/tap.types'
 import TabItemComponent from './TabItem'
 import TabsDropdown from './TabsDropdown'
+import ContextMenu from './ui/ContextMenu'
 
 const LOCAL_STORAGE_KEY = 'tabs-order-state'
 const MORE_BUTTON_WIDTH = 50
 
 interface TabsLayoutProps {
 	children: React.ReactNode
+}
+
+interface ContextMenuState {
+	x: number
+	y: number
+	tabId: string
+	isPinned: boolean
 }
 
 export default function TabsLayout({ children }: TabsLayoutProps) {
@@ -36,6 +44,8 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 
 	const [visibleTabs, setVisibleTabs] = useState<TabItem[]>([])
 	const [hiddenTabs, setHiddenTabs] = useState<TabItem[]>([])
+
+	const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
 
 	const containerRef = useRef<HTMLDivElement>(null)
 	const ghostContainerRef = useRef<HTMLDivElement>(null)
@@ -148,12 +158,33 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 				return a.isPinned ? -1 : 1
 			})
 		})
+		setContextMenu(null)
+	}
+
+	const handleContextMenu = (e: React.MouseEvent, tab: TabItem) => {
+		e.preventDefault()
+		setContextMenu({
+			x: e.clientX,
+			y: e.clientY,
+			tabId: tab.id,
+			isPinned: tab.isPinned,
+		})
 	}
 
 	if (!mounted) return null
 
 	return (
 		<div className='flex flex-col h-screen bg-[#F9FAFB]'>
+			{contextMenu && (
+				<ContextMenu
+					x={contextMenu.x}
+					y={contextMenu.y}
+					isPinned={contextMenu.isPinned}
+					onClose={() => setContextMenu(null)}
+					onTogglePin={() => handlePinToggle(contextMenu.tabId)}
+				/>
+			)}
+
 			<div className='fixed top-0 left-0 w-0 h-0 overflow-hidden invisible pointer-events-none'>
 				<div ref={ghostContainerRef} className='flex' style={{ width: 'max-content' }}>
 					{tabs.map(tab => (
@@ -161,7 +192,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 							key={tab.id}
 							tab={tab}
 							isActive={false}
-							onPinToggle={() => {}}
+							onContextMenu={() => {}}
 							variant='ghost'
 						/>
 					))}
@@ -189,7 +220,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 											key={tab.id}
 											tab={tab}
 											isActive={pathname === tab.url}
-											onPinToggle={handlePinToggle}
+											onContextMenu={handleContextMenu}
 											variant='default'
 										/>
 									))}
@@ -203,7 +234,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 							<TabsDropdown
 								hiddenTabs={hiddenTabs}
 								activeTabUrl={pathname || ''}
-								onPinToggle={handlePinToggle}
+								onContextMenu={handleContextMenu}
 							/>
 						</div>
 					)}

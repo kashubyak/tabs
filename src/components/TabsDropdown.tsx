@@ -5,22 +5,21 @@ import TabItemComponent from './TabItem'
 interface TabsDropdownProps {
 	hiddenTabs: TabItem[]
 	activeTabUrl: string
-	onPinToggle: (id: string) => void
+	onContextMenu: (e: React.MouseEvent, tab: TabItem) => void
 }
 
 export default function TabsDropdown({
 	hiddenTabs,
 	activeTabUrl,
-	onPinToggle,
+	onContextMenu,
 }: TabsDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const menuRef = useRef<HTMLDivElement>(null)
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+			if (menuRef.current && !menuRef.current.contains(event.target as Node))
 				setIsOpen(false)
-			}
 		}
 		document.addEventListener('mousedown', handleClickOutside)
 		return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -55,7 +54,7 @@ export default function TabsDropdown({
 								key={tab.id}
 								tab={tab}
 								isActive={tab.url === activeTabUrl}
-								onPinToggle={onPinToggle}
+								onContextMenu={onContextMenu}
 								variant='dropdown'
 							/>
 						))}

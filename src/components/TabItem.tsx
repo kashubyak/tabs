@@ -13,14 +13,14 @@ function cn(...inputs: ClassValue[]) {
 interface TabItemProps {
 	tab: TabItem
 	isActive: boolean
-	onPinToggle: (id: string) => void
+	onContextMenu: (e: React.MouseEvent, tab: TabItem) => void
 	style?: CSSProperties
 	isOverlay?: boolean
 	variant?: 'default' | 'dropdown' | 'ghost'
 }
 
 const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
-	({ tab, isActive, onPinToggle, style, isOverlay, variant = 'default' }, ref) => {
+	({ tab, isActive, onContextMenu, style, isOverlay, variant = 'default' }, ref) => {
 		const router = useRouter()
 		const isDropdown = variant === 'dropdown'
 		const isGhost = variant === 'ghost'
@@ -43,6 +43,11 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 			router.push(tab.url)
 		}
 
+		const handleContextMenu = (e: React.MouseEvent) => {
+			e.preventDefault()
+			onContextMenu(e, tab)
+		}
+
 		const finalRef = enableDnd ? setNodeRef : ref
 
 		return (
@@ -52,6 +57,7 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				{...(enableDnd ? attributes : {})}
 				{...(enableDnd ? listeners : {})}
 				onClick={handleTabClick}
+				onContextMenu={handleContextMenu}
 				className={cn(
 					'relative flex items-center h-full text-[14px] font-medium cursor-pointer select-none group whitespace-nowrap transition-colors',
 
@@ -96,22 +102,6 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				{(!tab.isPinned || isDropdown) && (
 					<span className='truncate leading-none pb-px'>{tab.title}</span>
 				)}
-
-				<button
-					className={cn(
-						'absolute transition-opacity text-gray-400 hover:text-gray-600',
-						'opacity-0 group-hover:opacity-100',
-						tab.isPinned && !isDropdown ? 'top-1 right-1 text-[10px]' : 'right-2',
-						isDropdown && 'opacity-100 relative right-0 ml-auto',
-					)}
-					onClick={e => {
-						e.stopPropagation()
-						onPinToggle(tab.id)
-					}}
-					title={tab.isPinned ? 'Unpin' : 'Pin'}
-				>
-					{tab.isPinned ? '❌' : '📌'}
-				</button>
 			</div>
 		)
 	},
