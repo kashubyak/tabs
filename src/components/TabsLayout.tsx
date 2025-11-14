@@ -48,7 +48,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 			try {
 				setTabs(JSON.parse(saved))
 			} catch (e) {
-				console.error('Failed to parse tabs state', e)
+				console.error(e)
 			}
 		}
 	}, [])
@@ -66,7 +66,6 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 			if (!containerRef.current || !ghostContainerRef.current) return
 
 			const containerWidth = containerRef.current.offsetWidth
-
 			const ghostNodes = Array.from(ghostContainerRef.current.children) as HTMLElement[]
 			if (ghostNodes.length !== tabs.length) return
 
@@ -96,7 +95,6 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 					if (currentWidth < availableWidth) {
 						newVisible.push(tab)
 						currentWidth += tab.width
-
 						if (currentWidth > availableWidth) {
 							newHidden.push(tab)
 						}
@@ -124,11 +122,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 	}, [tabs, mounted])
 
 	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: {
-				distance: 5,
-			},
-		}),
+		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
 		useSensor(KeyboardSensor),
 	)
 
@@ -146,9 +140,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 	const handlePinToggle = (id: string) => {
 		setTabs(prevTabs => {
 			const newTabs = prevTabs.map(tab => {
-				if (tab.id === id) {
-					return { ...tab, isPinned: !tab.isPinned }
-				}
+				if (tab.id === id) return { ...tab, isPinned: !tab.isPinned }
 				return tab
 			})
 			return newTabs.sort((a, b) => {
@@ -161,7 +153,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 	if (!mounted) return null
 
 	return (
-		<div className='flex flex-col h-screen bg-gray-50'>
+		<div className='flex flex-col h-screen bg-[#F9FAFB]'>
 			<div className='fixed top-0 left-0 w-0 h-0 overflow-hidden invisible pointer-events-none'>
 				<div ref={ghostContainerRef} className='flex' style={{ width: 'max-content' }}>
 					{tabs.map(tab => (
@@ -176,9 +168,12 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 				</div>
 			</div>
 
-			<header className='bg-white border-b border-gray-300 shadow-sm z-20'>
-				<div className='flex items-center w-full justify-between' ref={containerRef}>
-					<div className='flex-1 flex items-end overflow-hidden pl-2 h-full relative flex-nowrap'>
+			<header className='bg-white border-b border-gray-200 h-[50px] z-20'>
+				<div
+					className='flex items-center w-full justify-between h-full'
+					ref={containerRef}
+				>
+					<div className='flex-1 flex h-full overflow-hidden pl-0 relative flex-nowrap'>
 						<DndContext
 							sensors={sensors}
 							collisionDetection={closestCenter}
@@ -188,7 +183,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 								items={visibleTabs.map(t => t.id)}
 								strategy={horizontalListSortingStrategy}
 							>
-								<div className='flex h-full items-end w-full flex-nowrap'>
+								<div className='flex h-full w-full flex-nowrap'>
 									{visibleTabs.map(tab => (
 										<TabItemComponent
 											key={tab.id}
@@ -204,7 +199,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 					</div>
 
 					{hiddenTabs.length > 0 && (
-						<div className='shrink-0 border-l border-gray-200 bg-white z-30'>
+						<div className='shrink-0 border-l border-gray-200 bg-white h-full z-30'>
 							<TabsDropdown
 								hiddenTabs={hiddenTabs}
 								activeTabUrl={pathname || ''}
@@ -215,7 +210,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 				</div>
 			</header>
 
-			<main className='flex-1 p-6 overflow-auto bg-[#F3F4F6]'>
+			<main className='flex-1 p-6 overflow-auto'>
 				<div className='max-w-7xl mx-auto bg-white rounded-lg shadow-sm min-h-[400px] p-6 border border-gray-200'>
 					{children}
 				</div>
