@@ -1,12 +1,20 @@
-'use client'
-
 import TabsLayout from '@/components/TabsLayout'
-import { useParams } from 'next/navigation'
+import { initialTabs } from '@/data/initialTabs'
 
-export default function TabPage() {
-	const params = useParams()
+export async function generateStaticParams() {
+	return initialTabs.map(tab => ({
+		tabId: tab.url.replace('/', ''),
+	}))
+}
 
-	const tabId = Array.isArray(params.tabId) ? params.tabId[0] : params.tabId
+interface PageProps {
+	params: {
+		tabId: string
+	}
+}
+
+export default function TabPage({ params }: PageProps) {
+	const { tabId } = params
 
 	return (
 		<TabsLayout>
