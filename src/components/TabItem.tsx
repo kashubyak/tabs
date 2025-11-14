@@ -59,12 +59,12 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				onClick={handleTabClick}
 				onContextMenu={handleContextMenu}
 				className={cn(
-					'relative flex items-center h-full text-[14px] font-medium cursor-pointer select-none group whitespace-nowrap transition-colors',
+					'relative flex items-center h-full text-[14px] font-medium cursor-pointer select-none group whitespace-nowrap transition-colors shrink-0',
 
 					tab.isPinned && !isDropdown
-						? 'w-[52px] justify-center px-0 shrink-0'
+						? 'w-[52px] justify-center px-0'
 						: !isDropdown
-						? 'px-5 min-w-[120px] max-w-60'
+						? 'px-6'
 						: '',
 
 					!isDropdown &&
@@ -77,7 +77,8 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 					isDragging && 'opacity-50 z-50 shadow-md',
 
 					isDropdown &&
-						'w-full h-10 hover:bg-gray-100 px-4 min-w-0 max-w-none text-gray-600 border-b border-gray-50',
+						'w-full h-10 hover:bg-gray-100 px-4 min-w-0 max-w-none text-gray-600 border-b border-gray-50 shrink',
+
 					isGhost && 'opacity-0 pointer-events-none',
 				)}
 			>
@@ -92,7 +93,7 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				<span
 					className={cn(
 						'text-lg flex items-center justify-center',
-						!tab.isPinned && 'mr-3',
+						!tab.isPinned && 'mr-2.5',
 						isDropdown && 'w-6',
 					)}
 				>
@@ -100,7 +101,7 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				</span>
 
 				{(!tab.isPinned || isDropdown) && (
-					<span className='truncate leading-none pb-px'>{tab.title}</span>
+					<span className='truncate leading-none pb-px block'>{tab.title}</span>
 				)}
 			</div>
 		)

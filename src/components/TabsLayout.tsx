@@ -81,7 +81,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 
 			let totalTabsWidth = 0
 			const tabsWithWidth = tabs.map((tab, index) => {
-				const width = ghostNodes[index]?.getBoundingClientRect().width || 120
+				const width = Math.ceil(ghostNodes[index]?.getBoundingClientRect().width || 120)
 				totalTabsWidth += width
 				return { ...tab, width }
 			})
@@ -93,24 +93,19 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 			}
 
 			const availableWidth = containerWidth - MORE_BUTTON_WIDTH
-			let currentWidth = 0
+			let currentPosition = 0
 			const newVisible: TabItem[] = []
 			const newHidden: TabItem[] = []
 
 			tabsWithWidth.forEach(tab => {
 				if (tab.isPinned) {
 					newVisible.push(tab)
-					currentWidth += tab.width
+					currentPosition += tab.width
 				} else {
-					if (currentWidth < availableWidth) {
-						newVisible.push(tab)
-						currentWidth += tab.width
-						if (currentWidth > availableWidth) {
-							newHidden.push(tab)
-						}
-					} else {
-						newHidden.push(tab)
-					}
+					if (currentPosition < availableWidth) newVisible.push(tab)
+					else newHidden.push(tab)
+
+					currentPosition += tab.width
 				}
 			})
 
