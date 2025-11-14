@@ -16,7 +16,7 @@ import {
 	horizontalListSortingStrategy,
 	SortableContext,
 } from '@dnd-kit/sortable'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -42,6 +42,7 @@ interface ContextMenuState {
 
 export default function TabsLayout({ children }: TabsLayoutProps) {
 	const pathname = usePathname()
+	const router = useRouter()
 	const [tabs, setTabs] = useState<TabItem[]>(initialTabs)
 	const [mounted, setMounted] = useState(false)
 
@@ -106,9 +107,11 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 					newVisible.push(tab)
 					currentPosition += tab.width
 				} else {
-					if (currentPosition < availableWidth) newVisible.push(tab)
-					else newHidden.push(tab)
-
+					if (currentPosition < availableWidth) {
+						newVisible.push(tab)
+					} else {
+						newHidden.push(tab)
+					}
 					currentPosition += tab.width
 				}
 			})
@@ -165,6 +168,19 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 		setContextMenu(null)
 	}
 
+	const handleCloseTab = (id: string) => {
+		const tabToClose = tabs.find(t => t.id === id)
+		const isActive = tabToClose?.url === pathname
+
+		const newTabs = tabs.filter(t => t.id !== id)
+		setTabs(newTabs)
+
+		if (isActive && newTabs.length > 0) {
+			const nextTab = newTabs[newTabs.length - 1]
+			router.push(nextTab.url)
+		}
+	}
+
 	const handleContextMenu = (e: React.MouseEvent, tab: TabItem) => {
 		e.preventDefault()
 		setContextMenu({
@@ -199,6 +215,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 							tab={tab}
 							isActive={false}
 							onContextMenu={() => {}}
+							onClose={() => {}}
 							variant='ghost'
 						/>
 					))}
@@ -228,6 +245,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 											tab={tab}
 											isActive={pathname === tab.url}
 											onContextMenu={handleContextMenu}
+											onClose={() => handleCloseTab(tab.id)}
 											variant='default'
 										/>
 									))}
@@ -242,6 +260,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 												tab={activeTab}
 												isActive={pathname === activeTab.url}
 												onContextMenu={() => {}}
+												onClose={() => {}}
 												variant='default'
 												isOverlay
 											/>
@@ -258,6 +277,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 								hiddenTabs={hiddenTabs}
 								activeTabUrl={pathname || ''}
 								onContextMenu={handleContextMenu}
+								onCloseTab={handleCloseTab}
 							/>
 						</div>
 					)}

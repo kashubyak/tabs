@@ -6,12 +6,14 @@ interface TabsDropdownProps {
 	hiddenTabs: TabItem[]
 	activeTabUrl: string
 	onContextMenu: (e: React.MouseEvent, tab: TabItem) => void
+	onCloseTab: (id: string) => void
 }
 
 export default function TabsDropdown({
 	hiddenTabs,
 	activeTabUrl,
 	onContextMenu,
+	onCloseTab,
 }: TabsDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const menuRef = useRef<HTMLDivElement>(null)
@@ -71,6 +73,7 @@ export default function TabsDropdown({
 								tab={tab}
 								isActive={tab.url === activeTabUrl}
 								onContextMenu={onContextMenu}
+								onClose={() => onCloseTab(tab.id)}
 								variant='dropdown'
 							/>
 						))}

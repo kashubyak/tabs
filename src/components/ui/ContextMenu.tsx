@@ -21,15 +21,14 @@ export default function ContextMenu({
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) onClose()
+			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+				onClose()
+			}
 		}
-
 		const handleScroll = () => onClose()
-
 		window.addEventListener('mousedown', handleClickOutside)
 		window.addEventListener('scroll', handleScroll, true)
 		window.addEventListener('resize', handleScroll)
-
 		return () => {
 			window.removeEventListener('mousedown', handleClickOutside)
 			window.removeEventListener('scroll', handleScroll, true)
@@ -40,7 +39,7 @@ export default function ContextMenu({
 	return (
 		<div
 			ref={menuRef}
-			className='fixed z-50 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 min-w-[180px] animate-in fade-in zoom-in-95 duration-100'
+			className='fixed z-50 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 min-w-40 animate-in fade-in zoom-in-95 duration-100 flex flex-col'
 			style={{ top: y, left: x }}
 		>
 			<button
@@ -50,8 +49,8 @@ export default function ContextMenu({
 				}}
 				className='w-full text-left px-3 py-2 text-[13px] text-gray-700 hover:bg-gray-50 hover:text-black flex items-center gap-3 font-medium transition-colors'
 			>
-				<span className='text-base'>{isPinned ? '❌' : '📌'}</span>
-				{isPinned ? 'Відкріпити вкладку' : 'Закріпити вкладку'}
+				<span className='text-base w-4 text-center'>{isPinned ? '❌' : '📌'}</span>
+				{isPinned ? 'Відкріпити' : 'Закріпити'}
 			</button>
 		</div>
 	)
