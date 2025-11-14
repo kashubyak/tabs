@@ -19,7 +19,7 @@ export default async function TabPage({ params }: PageProps) {
 	return (
 		<TabsLayout>
 			<h2 className='text-2xl font-bold mb-4 text-zinc-800'>
-				/{tabId ? decodeURIComponent(tabId) : 'Loading...'}
+				/{decodeURIComponent(tabId)}
 			</h2>
 		</TabsLayout>
 	)
