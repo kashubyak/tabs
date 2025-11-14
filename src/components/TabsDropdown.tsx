@@ -3,19 +3,17 @@ import { TabItem } from '../types/tap.types'
 import TabItemComponent from './TabItem'
 
 interface TabsDropdownProps {
-	hiddenTabs: TabItem[]
+	overflowTabs: TabItem[]
 	activeTabUrl: string
 	onContextMenu: (e: React.MouseEvent, tab: TabItem) => void
 	onCloseTab: (id: string) => void
-	overflowCount: number 
 }
 
 export default function TabsDropdown({
-	hiddenTabs,
+	overflowTabs,
 	activeTabUrl,
 	onContextMenu,
 	onCloseTab,
-	overflowCount,
 }: TabsDropdownProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const menuRef = useRef<HTMLDivElement>(null)
@@ -29,9 +27,9 @@ export default function TabsDropdown({
 		return () => document.removeEventListener('mousedown', handleClickOutside)
 	}, [])
 
-	if (overflowCount === 0) return null
+	if (overflowTabs.length === 0) return null
 
-	const isHiddenTabActive = hiddenTabs.some(t => t.url === activeTabUrl)
+	const isHiddenTabActive = overflowTabs.some(t => t.url === activeTabUrl)
 
 	return (
 		<div className='relative h-full flex items-center z-30' ref={menuRef}>
@@ -61,7 +59,7 @@ export default function TabsDropdown({
 
 				{!isOpen && (
 					<span className='absolute top-2 right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gray-200 px-1 text-[10px] font-bold text-gray-600'>
-						{overflowCount} 
+						{overflowTabs.length}
 					</span>
 				)}
 			</button>
@@ -69,7 +67,7 @@ export default function TabsDropdown({
 			{isOpen && (
 				<div className='absolute top-full right-0 w-64 bg-white shadow-xl border border-gray-200 border-t-0 z-50 flex flex-col'>
 					<div className='max-h-[80vh] overflow-y-auto'>
-						{hiddenTabs.map(tab => (
+						{overflowTabs.map(tab => (
 							<TabItemComponent
 								key={tab.id}
 								tab={tab}

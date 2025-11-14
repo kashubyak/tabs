@@ -17,7 +17,7 @@ import {
 	SortableContext,
 } from '@dnd-kit/sortable'
 import { usePathname, useRouter } from 'next/navigation'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { initialTabs } from '../data/initialTabs'
@@ -27,7 +27,6 @@ import TabsDropdown from './TabsDropdown'
 import ContextMenu from './ui/ContextMenu'
 
 const LOCAL_STORAGE_KEY = 'tabs-order-state'
-const MORE_BUTTON_WIDTH = 50
 
 interface TabsLayoutProps {
 	children: React.ReactNode
@@ -46,13 +45,10 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 	const [tabs, setTabs] = useState<TabItem[]>(initialTabs)
 	const [mounted, setMounted] = useState(false)
 
-	const [visibleTabs, setVisibleTabs] = useState<TabItem[]>([])
-	const [hiddenTabs, setHiddenTabs] = useState<TabItem[]>([])
+	const [overflowTabs, setOverflowTabs] = useState<TabItem[]>([])
 
 	const [activeId, setActiveId] = useState<string | null>(null)
 	const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
-
-	const [overflowCount, setOverflowCount] = useState(0)
 
 	const containerRef = useRef<HTMLDivElement>(null)
 	const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -76,59 +72,33 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 		}
 	}, [tabs, mounted])
 
-	const updateOverflow = () => {
+	const updateOverflow = useCallback(() => {
 		const container = scrollContainerRef.current
 		if (!container) return
 
 		const containerRect = container.getBoundingClientRect()
 		const nodes = container.querySelectorAll('.tab-item-node')
+		const hiddenIds: string[] = []
 
-		let count = 0
 		nodes.forEach(node => {
 			const rect = node.getBoundingClientRect()
 			if (rect.left > containerRect.right - 5) {
-				count++
+				const id = node.getAttribute('data-tab-id')
+				if (id) hiddenIds.push(id)
 			}
 		})
 
-		setOverflowCount(count)
-	}
+		const newOverflowTabs = tabs.filter(t => hiddenIds.includes(t.id))
+		setOverflowTabs(newOverflowTabs)
+	}, [tabs])
 
 	useLayoutEffect(() => {
 		if (!mounted) return
 
-		const calculateVisibleTabs = () => {
-			if (!containerRef.current || !ghostContainerRef.current) return
-
-			const containerWidth = containerRef.current.offsetWidth
-			const ghostNodes = Array.from(ghostContainerRef.current.children) as HTMLElement[]
-			if (ghostNodes.length !== tabs.length) return
-			const tabsWithWidth = tabs.map((tab, index) => {
-				const width = Math.ceil(ghostNodes[index]?.getBoundingClientRect().width || 120)
-				return { ...tab, width }
-			})
-
-			setVisibleTabs(tabs)
-
-			const availableWidth = containerWidth - MORE_BUTTON_WIDTH
-			let currentPosition = 0
-			const newHidden: TabItem[] = []
-
-			tabsWithWidth.forEach(tab => {
-				if (currentPosition >= availableWidth) {
-					newHidden.push(tab)
-				}
-				currentPosition += tab.width
-			})
-
-			setHiddenTabs(newHidden)
-			setTimeout(updateOverflow, 0)
-		}
-
-		calculateVisibleTabs()
+		setTimeout(updateOverflow, 0)
 
 		const resizeObserver = new ResizeObserver(() => {
-			requestAnimationFrame(calculateVisibleTabs)
+			requestAnimationFrame(updateOverflow)
 		})
 
 		if (containerRef.current) {
@@ -136,7 +106,7 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 		}
 
 		return () => resizeObserver.disconnect()
-	}, [tabs, mounted])
+	}, [mounted, updateOverflow])
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -212,22 +182,22 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 
 	const scrollbarStyles = `
     .tab-scrollbar::-webkit-scrollbar {
-      height: 2px;
+      height: 3px;
     }
     .tab-scrollbar::-webkit-scrollbar-track {
       background: transparent;
-      margin: 0 4px;
+      margin: 0 10px;
     }
     .tab-scrollbar::-webkit-scrollbar-thumb {
-      background: #94A3B8;
+      background: #D1D5DB;
       border-radius: 10px;
     }
     .tab-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #64748B;
+      background: #9CA3AF;
     }
     .tab-scrollbar {
       scrollbar-width: thin;
-      scrollbar-color: #cdcdcd transparent;
+      scrollbar-color: #D1D5DB transparent;
     }
   `
 
@@ -278,11 +248,11 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 							onDragEnd={handleDragEnd}
 						>
 							<SortableContext
-								items={visibleTabs.map(t => t.id)}
+								items={tabs.map(t => t.id)}
 								strategy={horizontalListSortingStrategy}
 							>
 								<div className='flex h-full min-w-full flex-nowrap'>
-									{visibleTabs.map(tab => (
+									{tabs.map(tab => (
 										<TabItemComponent
 											key={tab.id}
 											tab={tab}
@@ -314,14 +284,13 @@ export default function TabsLayout({ children }: TabsLayoutProps) {
 						</DndContext>
 					</div>
 
-					{overflowCount > 0 && (
+					{overflowTabs.length > 0 && (
 						<div className='shrink-0 border-l border-gray-200 bg-white h-full z-30 shadow-[-5px_0_10px_-5px_rgba(0,0,0,0.05)]'>
 							<TabsDropdown
-								hiddenTabs={hiddenTabs}
+								overflowTabs={overflowTabs}
 								activeTabUrl={pathname || ''}
 								onContextMenu={handleContextMenu}
 								onCloseTab={handleCloseTab}
-								overflowCount={overflowCount}
 							/>
 						</div>
 					)}

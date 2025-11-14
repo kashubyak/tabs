@@ -70,6 +70,7 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 		return (
 			<div
 				ref={finalRef}
+				data-tab-id={tab.id}
 				style={enableDnd ? dndStyle : style}
 				{...(enableDnd ? attributes : {})}
 				{...(enableDnd ? listeners : {})}
@@ -131,60 +132,47 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				)}
 
 				{!isGhost && !isOverlay && (
-					<div
+					<button
+						onClick={handleClose}
 						className={cn(
-							'flex items-center justify-center transition-all z-30',
-
+							'absolute flex items-center justify-center transition-opacity z-30',
 							!isDropdown &&
-								'absolute right-0 top-0 bottom-0 w-8 opacity-0 group-hover:opacity-100 pr-2 justify-end bg-linear-to-l to-transparent',
-
-							!isDropdown &&
-								(isActive ? 'from-[#F3F4F6] ' : 'from-white group-hover:from-[#F3F4F6]'),
-
-							isDropdown && 'relative ml-auto w-5 h-5 bg-transparent',
+								'right-2 opacity-0 group-hover:opacity-100 w-4 h-4 rounded-full bg-[#EF4444] text-white hover:bg-red-600 shadow-sm',
+							isDropdown &&
+								'relative ml-auto right-0 w-5 h-5 text-gray-400 hover:text-gray-600 bg-transparent',
 						)}
 					>
-						<button
-							onClick={handleClose}
-							className={cn(
-								'flex items-center justify-center transition-colors',
-								!isDropdown &&
-									'w-4 h-4 rounded-full bg-[#EF4444] text-white hover:bg-red-600 shadow-sm',
-								isDropdown && 'w-full h-full text-gray-400 hover:text-gray-600',
-							)}
-						>
-							{isDropdown ? (
-								<svg
-									width='16'
-									height='16'
-									viewBox='0 0 24 24'
-									fill='none'
-									stroke='currentColor'
-									strokeWidth='2'
-									strokeLinecap='round'
-									strokeLinejoin='round'
-								>
-									<circle cx='12' cy='12' r='10' className='fill-gray-200 stroke-none' />
-									<path d='m15 9-6 6' stroke='white' />
-									<path d='m9 9 6 6' stroke='white' />
-								</svg>
-							) : (
-								<svg
-									width='8'
-									height='8'
-									viewBox='0 0 24 24'
-									fill='none'
-									stroke='currentColor'
-									strokeWidth='4'
-									strokeLinecap='round'
-									strokeLinejoin='round'
-								>
-									<path d='M18 6 6 18' />
-									<path d='m6 6 12 12' />
-								</svg>
-							)}
-						</button>
-					</div>
+						{isDropdown ? (
+							<svg
+								width='16'
+								height='16'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+							>
+								<circle cx='12' cy='12' r='10' className='fill-gray-200 stroke-none' />
+								<path d='m15 9-6 6' stroke='white' />
+								<path d='m9 9 6 6' stroke='white' />
+							</svg>
+						) : (
+							<svg
+								width='10'
+								height='10'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='4'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+							>
+								<path d='M18 6 6 18' />
+								<path d='m6 6 12 12' />
+							</svg>
+						)}
+					</button>
 				)}
 			</div>
 		)
