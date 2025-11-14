@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { TabItem } from '../types/tap.types'
 import TabItemComponent from './TabItem'
 
@@ -9,7 +9,7 @@ interface TabsDropdownProps {
 	onCloseTab: (id: string) => void
 }
 
-export default function TabsDropdown({
+function TabsDropdown({
 	overflowTabs,
 	activeTabUrl,
 	onContextMenu,
@@ -83,3 +83,5 @@ export default function TabsDropdown({
 		</div>
 	)
 }
+
+export default memo(TabsDropdown)

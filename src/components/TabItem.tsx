@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { clsx, type ClassValue } from 'clsx'
 import { useRouter } from 'next/navigation'
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, memo } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { TabItem } from '../types/tap.types'
 
@@ -43,9 +43,7 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 			...style,
 		}
 
-		const handleTabClick = () => {
-			router.push(tab.url)
-		}
+		const handleTabClick = () => router.push(tab.url)
 
 		const handleContextMenu = (e: React.MouseEvent) => {
 			e.preventDefault()
@@ -108,7 +106,6 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				{!isDropdown && !isGhost && isActive && !isOverlay && (
 					<div className='absolute top-0 left-0 right-0 h-[3px] bg-blue-600 z-20' />
 				)}
-
 				{!isActive && !isDropdown && !isGhost && !isOverlay && !isDragging && (
 					<div className='absolute right-0 top-1/2 -translate-y-1/2 h-4 w-px bg-gray-200 group-hover:hidden' />
 				)}
@@ -132,47 +129,57 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 				)}
 
 				{!isGhost && !isOverlay && (
-					<button
-						onClick={handleClose}
+					<div
 						className={cn(
-							'absolute flex items-center justify-center transition-opacity z-30',
+							'flex items-center justify-center transition-all z-30',
 							!isDropdown &&
-								'right-2 opacity-0 group-hover:opacity-100 w-4 h-4 rounded-full bg-[#EF4444] text-white hover:bg-red-600 shadow-sm',
-							isDropdown &&
-								'relative ml-auto right-0 w-5 h-5 text-gray-400 hover:text-gray-600 bg-transparent',
+								'absolute right-0 top-0 bottom-0 w-8 opacity-0 group-hover:opacity-100 pr-2 justify-end bg-linear-to-l to-transparent',
+							!isDropdown &&
+								(isActive ? 'from-[#F3F4F6] ' : 'from-white group-hover:from-[#F3F4F6]'),
+							isDropdown && 'relative ml-auto w-5 h-5 bg-transparent',
 						)}
 					>
-						{isDropdown ? (
-							<svg
-								width='16'
-								height='16'
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='2'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-							>
-								<circle cx='12' cy='12' r='10' className='fill-gray-200 stroke-none' />
-								<path d='m15 9-6 6' stroke='white' />
-								<path d='m9 9 6 6' stroke='white' />
-							</svg>
-						) : (
-							<svg
-								width='10'
-								height='10'
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='4'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-							>
-								<path d='M18 6 6 18' />
-								<path d='m6 6 12 12' />
-							</svg>
-						)}
-					</button>
+						<button
+							onClick={handleClose}
+							className={cn(
+								'flex items-center justify-center transition-colors',
+								!isDropdown &&
+									'w-4 h-4 rounded-full bg-[#EF4444] text-white hover:bg-red-600 shadow-sm',
+								isDropdown && 'w-full h-full text-gray-400 hover:text-gray-600',
+							)}
+						>
+							{isDropdown ? (
+								<svg
+									width='16'
+									height='16'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='2'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+								>
+									<circle cx='12' cy='12' r='10' className='fill-gray-200 stroke-none' />
+									<path d='m15 9-6 6' stroke='white' />
+									<path d='m9 9 6 6' stroke='white' />
+								</svg>
+							) : (
+								<svg
+									width='8'
+									height='8'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='4'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+								>
+									<path d='M18 6 6 18' />
+									<path d='m6 6 12 12' />
+								</svg>
+							)}
+						</button>
+					</div>
 				)}
 			</div>
 		)
@@ -181,4 +188,4 @@ const TabItemComponent = React.forwardRef<HTMLDivElement, TabItemProps>(
 
 TabItemComponent.displayName = 'TabItemComponent'
 
-export default TabItemComponent
+export default memo(TabItemComponent)

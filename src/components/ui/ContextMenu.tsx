@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 
 interface ContextMenuProps {
 	x: number
@@ -10,13 +10,7 @@ interface ContextMenuProps {
 	onTogglePin: () => void
 }
 
-export default function ContextMenu({
-	x,
-	y,
-	isPinned,
-	onClose,
-	onTogglePin,
-}: ContextMenuProps) {
+function ContextMenu({ x, y, isPinned, onClose, onTogglePin }: ContextMenuProps) {
 	const menuRef = useRef<HTMLDivElement>(null)
 
 	useEffect(() => {
@@ -55,3 +49,5 @@ export default function ContextMenu({
 		</div>
 	)
 }
+
+export default memo(ContextMenu)
