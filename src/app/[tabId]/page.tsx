@@ -1,7 +1,7 @@
 'use client'
 
+import TabsLayout from '@/components/TabsLayout'
 import { useParams } from 'next/navigation'
-import TabsLayout from '../../components/TabsLayout'
 
 export default function TabPage() {
 	const params = useParams()
